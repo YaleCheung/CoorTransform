@@ -92,7 +92,7 @@ private:
         return params.long_radius * (1 - params.ecc2) / std::pow(1 - params.ecc2 * std::pow(std::sin(x), 2), 3.0f / 2);
     }
 public:
-    static auto gisToGauss(double latitude, double longitude, ModelType type) -> Coor2D {
+    static auto gisToGauss(double longitude, double latitude, ModelType type) -> Coor2D {
         auto lat_rad = latitude / 180 * PI<double>;
         // auto lon_rad = longitude / 180 * PI<double>;
 
@@ -123,11 +123,11 @@ public:
         auto latitude_tan = std::tan(lat_rad);
         auto niu2 = ecc2 * std::pow(std::cos(lat_rad), 2);
         
-        auto x_coor = ret + N / 2.0f * std::sin(lat_rad) * cos(lat_rad) * l * l + N / 24.0f * std::sin(lat_rad) * std::pow(cos(lat_rad), 3) * (5 - std::pow(latitude_tan, 2) + 9 * niu2 + 4 * std::pow(niu2, 2)) * std::pow(l, 4) + N / 720.0f * std::sin(lat_rad) * std::pow(std::cos(lat_rad), 5) * (61 - 58 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4)) * std::pow(l, 6);
+        auto y_coor = ret + N / 2.0f * std::sin(lat_rad) * cos(lat_rad) * l * l + N / 24.0f * std::sin(lat_rad) * std::pow(cos(lat_rad), 3) * (5 - std::pow(latitude_tan, 2) + 9 * niu2 + 4 * std::pow(niu2, 2)) * std::pow(l, 4) + N / 720.0f * std::sin(lat_rad) * std::pow(std::cos(lat_rad), 5) * (61 - 58 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4)) * std::pow(l, 6);
 
-        auto y_coor = N * std::cos(lat_rad) * l + double(N) / BANDS * std::pow(std::cos(lat_rad), 3) * (1 - std::pow(latitude_tan, 2) + niu2) * std::pow(l, 3)  + N / 120.0f * std::pow(std::cos(lat_rad), 5) * (5 - 18 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4) + 14 * niu2 - 58 * std::pow(latitude_tan, 2) * niu2) * std::pow(l, 5);
-        y_coor += FALSE_EASTING;
-        y_coor += band_order * std::pow(10, std::floor(std::log10(y_coor) + 1));
+        auto x_coor = N * std::cos(lat_rad) * l + double(N) / BANDS * std::pow(std::cos(lat_rad), 3) * (1 - std::pow(latitude_tan, 2) + niu2) * std::pow(l, 3)  + N / 120.0f * std::pow(std::cos(lat_rad), 5) * (5 - 18 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4) + 14 * niu2 - 58 * std::pow(latitude_tan, 2) * niu2) * std::pow(l, 5);
+        x_coor += FALSE_EASTING;
+        x_coor += band_order * std::pow(10, std::floor(std::log10(x_coor) + 1));
 
         return {x_coor, y_coor};
     }
