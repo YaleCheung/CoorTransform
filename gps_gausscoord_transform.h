@@ -6,7 +6,7 @@
 // #include <utility> 
 #include <gsl/gsl_integration.h>
 
-#define EARTH_LONG 6378137.0f
+#define EARTH_LONG 6378137.0
 #define FALSE_EASTING 500000
 #define BANDS 6
 
@@ -28,11 +28,11 @@ typedef struct EarthParams {
 class EarthModel {
     // member
     auto _calMinorRadius() {
-        _minor_radius = _long_radius * (1.0f - _flatteness);
+        _minor_radius = _long_radius * (1.0 - _flatteness);
     }
 
     auto _calEccentricity1() {
-        _eccentricity1 = 2.0f * _flatteness - _flatteness * _flatteness;
+        _eccentricity1 = 2.0 * _flatteness - _flatteness * _flatteness;
     }
 
     auto _calEccentricity2() {
@@ -41,8 +41,8 @@ class EarthModel {
 public:
     // constructor by model_type
     EarthModel(ModelType model_type = WGS84) : 
-       _long_radius{EARTH_LONG}, _flatteness{0.0f}, _minor_radius(0.0f),
-       _eccentricity1{0.0f}, _eccentricity2{0.0f} {
+       _long_radius{EARTH_LONG}, _flatteness{0.0}, _minor_radius(0.0),
+       _eccentricity1{0.0}, _eccentricity2{0.0} {
         calEarthParams(model_type);
     }
 
@@ -56,11 +56,11 @@ public:
         switch(model_type) {
             //'wgs84'
             case WGS84:
-                _flatteness = 1.0f/ 298.257223563;
+                _flatteness = 1.0 / 298.257223563;
                 break;
             // 'cgcs2000'
             case CGCS2000:
-                _flatteness = 1.0f / 298.257222101;
+                _flatteness = 1.0 / 298.257222101;
                 break;
             default:
                 break;
@@ -89,7 +89,7 @@ class GisConverter {
 private:
     static auto area(double x, void* p) -> double {
         EarthParams params = *((EarthParams *)p);
-        return params.long_radius * (1 - params.ecc2) / std::pow(1 - params.ecc2 * std::pow(std::sin(x), 2), 3.0f / 2);
+        return params.long_radius * (1 - params.ecc2) / std::pow(1 - params.ecc2 * std::pow(std::sin(x), 2), 3.0 / 2);
     }
 public:
     static auto gisToGauss(double longitude, double latitude, ModelType type) -> Coor2D {
@@ -123,9 +123,9 @@ public:
         auto latitude_tan = std::tan(lat_rad);
         auto niu2 = ecc2 * std::pow(std::cos(lat_rad), 2);
         
-        auto y_coor = ret + N / 2.0f * std::sin(lat_rad) * cos(lat_rad) * l * l + N / 24.0f * std::sin(lat_rad) * std::pow(cos(lat_rad), 3) * (5 - std::pow(latitude_tan, 2) + 9 * niu2 + 4 * std::pow(niu2, 2)) * std::pow(l, 4) + N / 720.0f * std::sin(lat_rad) * std::pow(std::cos(lat_rad), 5) * (61 - 58 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4)) * std::pow(l, 6);
+        auto y_coor = ret + N / 2.0 * std::sin(lat_rad) * cos(lat_rad) * l * l + N / 24.0 * std::sin(lat_rad) * std::pow(cos(lat_rad), 3) * (5 - std::pow(latitude_tan, 2) + 9 * niu2 + 4 * std::pow(niu2, 2)) * std::pow(l, 4) + N / 720.0 * std::sin(lat_rad) * std::pow(std::cos(lat_rad), 5) * (61 - 58 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4)) * std::pow(l, 6);
 
-        auto x_coor = N * std::cos(lat_rad) * l + double(N) / BANDS * std::pow(std::cos(lat_rad), 3) * (1 - std::pow(latitude_tan, 2) + niu2) * std::pow(l, 3)  + N / 120.0f * std::pow(std::cos(lat_rad), 5) * (5 - 18 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4) + 14 * niu2 - 58 * std::pow(latitude_tan, 2) * niu2) * std::pow(l, 5);
+        auto x_coor = N * std::cos(lat_rad) * l + double(N) / BANDS * std::pow(std::cos(lat_rad), 3) * (1 - std::pow(latitude_tan, 2) + niu2) * std::pow(l, 3)  + N / 120.0 * std::pow(std::cos(lat_rad), 5) * (5 - 18 * std::pow(latitude_tan, 2) + std::pow(latitude_tan, 4) + 14 * niu2 - 58 * std::pow(latitude_tan, 2) * niu2) * std::pow(l, 5);
         x_coor += FALSE_EASTING;
         x_coor += band_order * std::pow(10, std::floor(std::log10(x_coor) + 1));
 
